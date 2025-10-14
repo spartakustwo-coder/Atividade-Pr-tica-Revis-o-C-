@@ -1,0 +1,145 @@
+using System; // Importa funcionalidades básicas do .NET, como entrada/saída e tipos primitivos
+using System.Globalization; // Permite configurar o formato de números e datas
+
+internal class Program
+{
+    [STAThread]
+    static void Main(string[] args)
+    {
+        // Exibe a data e hora atuais
+        Console.WriteLine("Data e hora atuais: " + DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"));
+
+        // Mensagem de boas-vindas
+        Console.WriteLine("Bem-vindo à Calculadora Simples!");
+
+        // Contadores de operações e erros
+        int totalOperacoes = 0;
+        int totalErros = 0;
+
+        // Controle do laço principal
+        string continuar = "sim";
+
+        // Laço principal que repete até o usuário digitar "não"
+        while (continuar.ToLower() == "sim")
+        {
+            // Exibe o menu de operações
+            Console.WriteLine("\nEscolha a sua operação:");
+            Console.WriteLine("1 - Adição");
+            Console.WriteLine("2 - Subtração");
+            Console.WriteLine("3 - Multiplicação");
+            Console.WriteLine("4 - Divisão");
+            Console.WriteLine("5 - Módulo");
+            Console.WriteLine("6 - Sair");
+
+            // Lê a opção escolhida pelo usuário
+            Console.Write("Digite a opção desejada: ");
+            string opcaoStr = Console.ReadLine();
+            int operacao;
+
+            // Valida se a opção é um número entre 1 e 6
+            if (!int.TryParse(opcaoStr, out operacao) || operacao < 1 || operacao > 6)
+            {
+                Console.WriteLine("Opção inválida!");
+                totalErros++;
+                continue; // Volta ao início do laço
+            }
+
+            // Encerra o programa se a opção for 6
+            if (operacao == 6)
+                break;
+
+            // Solicita os dois números para a operação
+            Console.Write("Digite o primeiro número: ");
+            string num1Str = Console.ReadLine();
+            Console.Write("Digite o segundo número: ");
+            string num2Str = Console.ReadLine();
+
+            double num1, num2;
+
+            // Valida se os números são válidos (formato numérico)
+            if (!double.TryParse(num1Str, NumberStyles.Any, CultureInfo.InvariantCulture, out num1) ||
+                !double.TryParse(num2Str, NumberStyles.Any, CultureInfo.InvariantCulture, out num2))
+            {
+                Console.WriteLine("Entrada numérica inválida!");
+                totalErros++;
+                continue;
+            }
+
+            double resultado = 0;
+            bool operacaoValida = true;
+
+            // Executa a operação escolhida
+            switch (operacao)
+            {
+                case 1:
+                    resultado = Adicao(num1, num2);
+                    break;
+                case 2:
+                    resultado = Subtracao(num1, num2);
+                    break;
+                case 3:
+                    resultado = Multiplicacao(num1, num2);
+                    break;
+                case 4:
+                    // Verifica divisão por zero
+                    if (num2 == 0)
+                    {
+                        Console.WriteLine("Operação não permitida com divisor zero!");
+                        totalErros++;
+                        operacaoValida = false;
+                    }
+                    else
+                    {
+                        resultado = Divisao(num1, num2);
+                    }
+                    break;
+                case 5:
+                    // Verifica módulo por zero
+                    if (num2 == 0)
+                    {
+                        Console.WriteLine("Operação não permitida com divisor zero!");
+                        totalErros++;
+                        operacaoValida = false;
+                    }
+                    else
+                    {
+                        resultado = Modulo(num1, num2);
+                    }
+                    break;
+            }
+
+            // Exibe o resultado se a operação foi válida
+            if (operacaoValida)
+            {
+                Console.WriteLine($"Resultado: {resultado:F2}");
+                totalOperacoes++;
+            }
+
+            // Pergunta se o usuário deseja continuar
+            Console.Write("\nDeseja continuar calculando? (sim/não): ");
+            continuar = Console.ReadLine();
+        }
+
+        // Exibe o resumo final das operações
+        string resumo = $"Total de operações realizadas: {totalOperacoes}\n" +
+                        $"Total de erros encontrados: {totalErros}\n\n" +
+                        "Obrigado por usar a Calculadora!";
+
+        Console.WriteLine("\n" + resumo);
+    }
+
+    // Função para somar dois números
+    public static double Adicao(double num1, double num2) => num1 + num2;
+
+    // Função para subtrair dois números
+    public static double Subtracao(double num1, double num2) => num1 - num2;
+
+    // Função para multiplicar dois números
+    public static double Multiplicacao(double num1, double num2) => num1 * num2;
+
+    // Função para dividir dois números
+    public static double Divisao(double num1, double num2) => num1 / num2;
+
+    // Função para calcular o módulo (resto da divisão)
+    public static double Modulo(double num1, double num2) => num1 % num2;
+}
